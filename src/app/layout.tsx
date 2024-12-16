@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 import "./globals.css";
-import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { ConfigProvider } from "antd";
+import StyleRegistry from "@/components/StyleRegistry";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -24,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={` ${dmSans.variable}`}>
-        <AntdRegistry>
+        <StyleRegistry>
           <ConfigProvider
             theme={{
               token: {
@@ -34,7 +34,7 @@ export default function RootLayout({
           >
             {children}
           </ConfigProvider>
-        </AntdRegistry>
+        </StyleRegistry>
       </body>
     </html>
   );
