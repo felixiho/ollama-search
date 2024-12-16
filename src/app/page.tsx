@@ -1,6 +1,11 @@
 import Image from "next/image";
 import styles from "./page.module.css";
+import NavHeader from "./home/components/navigation/NavHeader";
 
 export default function Home() {
-  return <div className={styles.page}>OLLAMA SEARCH</div>;
+  return (
+    <section className={styles.page}>
+      <NavHeader />
+    </section>
+  );
 }

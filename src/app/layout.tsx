@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 import "./globals.css";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
+import { ConfigProvider } from "antd";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -23,7 +24,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={` ${dmSans.variable}`}>
-        <AntdRegistry>{children}</AntdRegistry>
+        <AntdRegistry>
+          <ConfigProvider
+            theme={{
+              token: {
+                fontFamily: dmSans.style.fontFamily,
+              },
+            }}
+          >
+            {children}
+          </ConfigProvider>
+        </AntdRegistry>
       </body>
     </html>
   );
