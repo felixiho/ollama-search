@@ -1,22 +1,47 @@
-import { Button } from "antd";
+import {
+  searchEngineSelectors,
+  useSearchEngineStore,
+} from "@/store/searchEngines";
+import { Button, notification } from "antd";
 import type { MenuProps } from "antd";
 import { Dropdown, Space } from "antd";
 import { createStyles } from "antd-style";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const useStyles = createStyles(({ css, token }) => ({
   link: css`
     color: ${token.colorTextBase};
     text-transform: capitalize;
   `,
+  active: css`
+    color: ${token.colorLinkActive};
+  `,
 }));
 
-const searchEngines = [
-  { name: "Tavily", key: "tavily" },
-  { name: "Google", key: "google" },
-];
 export default function SearchEngines() {
-  const [selectedSearchEngine, setSelectedSearchEngine] = useState("");
+  const [
+    searchEngineList,
+    error,
+    selectedSearchEngine,
+    setSelectedSearchEngine,
+  ] = useSearchEngineStore((s) => [
+    s.searchEngineList,
+    s.error,
+    s.selectedSearchEngine,
+    s.setSelectedSearchEngine,
+  ]);
+
+  const [api, contextHolder] = notification.useNotification();
+  const { styles } = useStyles();
+
+  useEffect(() => {
+    if (error) {
+      console.error("Search engine error:", error);
+      api.error({
+        message: error,
+      });
+    }
+  }, [error, api.error]);
 
   const items = useMemo<MenuProps["items"]>(() => {
     let searchEnginesList: MenuProps["items"] = [
@@ -27,23 +52,38 @@ export default function SearchEngines() {
       },
     ];
 
-    const modelsFormatted: MenuProps["items"] = searchEngines.map((m) => ({
-      key: m.key,
-      label: m.name,
-      disabled: false,
-    }));
-    searchEnginesList = [...searchEnginesList, ...modelsFormatted];
+    const searchEngines: MenuProps["items"] = searchEngineList.map(
+      (engines) => ({
+        key: engines.key,
+        label: (
+          <span
+            className={
+              selectedSearchEngine === engines.key ? styles.active : ""
+            }
+          >
+            {engines.label}
+          </span>
+        ),
+        disabled: false,
+        onClick: () => setSelectedSearchEngine(engines.key),
+      })
+    );
+    searchEnginesList = [...searchEnginesList, ...searchEngines];
 
     return searchEnginesList;
-  }, [selectedSearchEngine]);
+  }, [selectedSearchEngine, searchEngineList]);
 
-  const { styles } = useStyles();
   if (!items || items.length < 1) return null;
   return (
-    <Dropdown menu={{ items }} trigger={["click"]}>
-      <Button className={styles.link} onClick={(e) => e.preventDefault()}>
-        <Space>{items[1]?.key}</Space>
-      </Button>
-    </Dropdown>
+    <>
+      {contextHolder}
+      <Dropdown menu={{ items }} trigger={["click"]}>
+        <Button className={styles.link} onClick={(e) => e.preventDefault()}>
+          <Space>
+            {selectedSearchEngine ? selectedSearchEngine : "Search Engines"}
+          </Space>
+        </Button>
+      </Dropdown>
+    </>
   );
 }
