@@ -1,7 +1,8 @@
 import { SearchEngineTypes } from "@/app/home/components/search-box/search-engine/types";
+import { SearchResponse, SearchResult } from "@/app/home/features/search/types";
 import { apiFetch } from "@/utils/fetch";
 
-
+type TavilySearchResult = SearchResponse | SearchResponse[] | SearchResult[]
 export class SearchService {
     private model: string;
     private searchEngine: SearchEngineTypes;
@@ -11,22 +12,94 @@ export class SearchService {
         this.searchEngine = searchEngine;
     }
 
-    private tavilySearch(searchInput: string) {
-        return `api/tavily?searchInput=${searchInput}`;
+    private async tavilySearch(searchInput: string, controller?: AbortSignal) {
+        const searchUrl = `api/tavily?searchInput=${searchInput}`;
+        const searchResults = await apiFetch(searchUrl, { query: searchInput }, controller)
+        const formatSearchResults = this.formatTavilyResults(searchResults, 10);
+        const sources = this.generateTavilySources(searchResults)
+
+        return {
+            searchResults: formatSearchResults,
+            sources
+        }
     }
-    private googleSearch(searchInput: string) {
-        return `api/google?searchInput=${searchInput}`;
+    private googleSearch(searchInput: string, controller?: AbortSignal) {
+        const searchUrl = `api/google?searchInput=${searchInput}`;
+        return {
+            searchResults: '',
+            sources: ''
+        }
     }
 
     async webSearch(searchInput: string, controller?: AbortSignal) {
-        let searchUrl = "";
+
         if (this.searchEngine === SearchEngineTypes.TAVILY) {
-            searchUrl = this.tavilySearch(searchInput);
+            return await this.tavilySearch(searchInput, controller);
         } else if (this.searchEngine === SearchEngineTypes.GOOGLE) {
-            searchUrl = this.googleSearch(searchInput);
+            return await this.googleSearch(searchInput, controller);
         }
 
-        return await apiFetch(searchUrl, { query: searchInput }, controller);
+        return {
+            searchResults: '',
+            sources: ''
+        }
+    }
+
+    private generateTavilySources(searchResults: SearchResponse) {
+        return searchResults.results
+            .map(source => `* ${source.title} : ${source.url}`)
+            .join('\n');
+    }
+
+    private formatTavilyResults(
+        searchResponse: TavilySearchResult,
+        maxTokensPerSource: number,
+        includeRawContent: boolean = true
+    ): string {
+        let sourcesList: SearchResult[] = [];
+
+        if (Array.isArray(searchResponse)) {
+            sourcesList = searchResponse.reduce((acc: SearchResult[], response) => {
+                if ('results' in response) {
+                    return [...acc, ...(response as SearchResponse).results];
+                }
+                return [...acc, response as SearchResult];
+            }, []);
+        } else {
+            sourcesList = searchResponse.results;
+        }
+
+        const uniqueSources = new Map<string, SearchResult>();
+        sourcesList.forEach(source => {
+            if (!uniqueSources.has(source.url)) {
+                uniqueSources.set(source.url, source);
+            }
+        });
+
+        let formattedText = "Sources:\n\n";
+
+        uniqueSources.forEach((source, _) => {
+            formattedText += `Source ${source.title}:\n===\n`;
+            formattedText += `URL: ${source.url}\n===\n`;
+            formattedText += `Most relevant content from source: ${source.content}\n===\n`;
+
+            if (includeRawContent) {
+                const charLimit = maxTokensPerSource * 4;
+                let rawContent = source.raw_content || '';
+
+                if (!rawContent) {
+                    console.warn(`Warning: No raw_content found for source ${source.url}`);
+                }
+
+                if (rawContent.length > charLimit) {
+                    rawContent = `${rawContent.slice(0, charLimit)}... [truncated]`;
+                }
+
+                formattedText += `Full source content limited to ${maxTokensPerSource} tokens: ${rawContent}\n\n`;
+            }
+        });
+
+        return formattedText.trim();
     }
 }
 

@@ -11,9 +11,11 @@
   "dependencies": {
     "antd": "^5.22.4",
     "antd-style": "^3.7.1",
+    "immer": "^10.1.1",
     "lucide-react": "^0.468.0",
     "nanoid": "^5.0.9",
     "next": "14.2.8",
+    "ollama": "^0.5.11",
     "react": "^18",
     "react-dom": "^18",
     "swr": "^2.2.5",

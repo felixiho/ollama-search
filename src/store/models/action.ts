@@ -3,7 +3,7 @@ import { ModelStore } from "./store";
 
 import useSWR, { SWRResponse } from "swr";
 import { StateCreator } from "zustand";
-import { modelService } from "@/services/Models";
+import { modelService } from "@/services/models";
 
 export interface ModelActionsType {
   setModelList: (models: ModelEntry[]) => void;

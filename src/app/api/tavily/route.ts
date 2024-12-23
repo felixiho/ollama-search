@@ -8,7 +8,6 @@ export async function POST(request: Request) {
         const { query } = body
 
         const { TAVILY_API_KEY } = getServerConfig()
-        console.log('TAVILY_API_KEY:', TAVILY_API_KEY)
         const response = await fetch(`${TAVILY_URL}/search`, {
             method: 'POST',
             headers: {
@@ -16,8 +15,9 @@ export async function POST(request: Request) {
             },
             body: JSON.stringify({
                 api_key: TAVILY_API_KEY,
-                query: query, 
+                query: query,
                 include_raw_content: true,
+                max_results: 3
             }),
         })
 

@@ -10,11 +10,13 @@ export interface SearchStoreType {
   searchEngine?: SearchEngineTypes
   controller?: AbortController
   loading: boolean;
+  loadingWeb: boolean;
 }
 
 export const intialSearchState: SearchStoreType = {
   id: "",
   searchInput: "",
   answer: [],
-  loading: true
+  loading: true,
+  loadingWeb: true
 };

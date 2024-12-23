@@ -3,11 +3,17 @@ import { SearchStore } from "./store";
 import { SearchEngineTypes } from "@/app/home/components/search-box/search-engine/types";
 import { nanoid } from 'nanoid'
 import { SearchService } from "@/services/Search";
+import { SearchResultType, WebSearchType } from "@/app/home/features/search/types";
+import { Ollama } from "@/services/models/Ollama";
+import { searchReducer, UpdateSearchResults } from "./reducer";
 
 
 export interface SearchActionsType {
   search: (searchInput: string, model: string, searchEngine: SearchEngineTypes) => void;
-  searchWeb: (searchService: SearchService) => Promise<string>;
+  searchWeb: (searchService: SearchService) => Promise<WebSearchType>;
+  createSearchResult: (searchResult: SearchResultType) => void;
+  searchLLM: (answer: SearchResultType) => Promise<void>;
+  updateResult: (payload: UpdateSearchResults) => void;
 }
 
 export const SearchActions: StateCreator<
@@ -17,18 +23,68 @@ export const SearchActions: StateCreator<
   SearchActionsType
 > = (set, get) => ({
   async search(searchInput, model, searchEngine) {
-    const { searchWeb } = get()
+    const { searchWeb, searchLLM, createSearchResult, updateResult } = get()
     const id = nanoid()
     const controller = new AbortController()
     set({ id, searchInput, model, searchEngine, controller }, false);
 
+
+    const searchResult: SearchResultType = {
+      id,
+      query: searchInput,
+      model,
+      searchEngine,
+      searchEngineAnswer: '',
+      sources: '',
+      createdAt: Date.now(),
+      answer: ''
+    }
+    createSearchResult(searchResult)
+
     const searchService = new SearchService(model, searchEngine)
     const webResponse = await searchWeb(searchService)
+    updateResult({ id, key: 'searchEngineAnswer', type: 'updateSearchResult', value: webResponse.searchResults })
+    updateResult({ id, key: 'sources', type: 'updateSearchResult', value: webResponse.sources })
+    searchResult.searchEngineAnswer = webResponse.searchResults
+    searchResult.sources = webResponse.sources
+    searchLLM(searchResult)
+  },
+  async searchLLM(answer: SearchResultType) {
+    const { updateResult } = get()
+    const ollama = new Ollama(answer.model)
+    const ollamaUrl = ollama.generateQueryUrl(answer.query, answer.searchEngineAnswer)
+    const response = await fetch(ollamaUrl)
+    const reader = response.body?.getReader();
+    const decoder = new TextDecoder();
+    if (!reader) {
+      console.error('No response body received from API');
+      return;
+    }
+    let output = ''
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const decoded = decoder.decode(value, { stream: true });
+      if (decoded.length) {
+        const chunk = JSON.parse(decoded)
+        const response = chunk.response
+        output += response
+        updateResult({ id: answer.id, key: 'answer', type: 'updateSearchResult', value: output })
+      }
+    }
+    set({ loading: false }, false)
+  },
+  updateResult(payload) {
+    const answer = searchReducer(get().answer, payload);
+    set({ answer }, false);
+  },
+  createSearchResult(searchResult) {
+    const { answer } = get()
+    set({ loadingWeb: false, answer: [...answer, searchResult] }, false)
   },
   async searchWeb(searchService) {
     const { searchInput, controller } = get()
     const webResponse = await searchService.webSearch(searchInput, controller?.signal)
-    console.log('webResponse', webResponse)
     return webResponse;
   }
 });
