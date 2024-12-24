@@ -26,7 +26,7 @@ const useStyles = createStyles(({ css }) => ({
     }
   `,
 }));
-export default function searchTextArea() {
+export default function SearchTextArea({isFollowup}: {isFollowup?: boolean}) {
   const { styles } = useStyles();
   const [api, contextHolder] = notification.useNotification();
   const [value, setValue] = useState("");
@@ -52,7 +52,7 @@ export default function searchTextArea() {
       });
       return false
     }
-    search(value, selectedModel, selectedSearchEngine);
+    search(value, selectedModel, selectedSearchEngine, !!isFollowup);
   }
 
   return (

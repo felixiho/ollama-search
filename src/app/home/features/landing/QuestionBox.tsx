@@ -8,11 +8,11 @@ import Upload from "../../components/search-box/upload";
 
 const useStyles = createStyles(({ css }) => ({
   box_card: css`
-    max-width: 600px;
+    max-width: 675px;
     width: 100%;
   `,
 }));
-export default function QuestionBox() {
+export default function QuestionBox({ isFollowup }: { isFollowup?: boolean }) {
   const { styles } = useStyles();
   return (
     <Flex justify="center">
@@ -24,7 +24,7 @@ export default function QuestionBox() {
         }}
         className={styles.box_card}
       >
-        <SearchTextArea />
+        <SearchTextArea isFollowup={isFollowup} />
         <Flex justify="space-between" align="center">
           <Space wrap>
             <Models />

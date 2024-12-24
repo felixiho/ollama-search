@@ -9,10 +9,10 @@ import { searchReducer, UpdateSearchResults } from "./reducer";
 
 
 export interface SearchActionsType {
-  search: (searchInput: string, model: string, searchEngine: SearchEngineTypes) => void;
+  search: (searchInput: string, model: string, searchEngine: SearchEngineTypes, isFollowup: boolean) => void;
   searchWeb: (searchService: SearchService) => Promise<WebSearchType>;
   createSearchResult: (searchResult: SearchResultType) => void;
-  searchLLM: (answer: SearchResultType) => Promise<void>;
+  searchLLM: (answer: SearchResultType, previousAnswer?: string) => Promise<void>;
   updateResult: (payload: UpdateSearchResults) => void;
 }
 
@@ -22,8 +22,8 @@ export const SearchActions: StateCreator<
   [],
   SearchActionsType
 > = (set, get) => ({
-  async search(searchInput, model, searchEngine) {
-    const { searchWeb, searchLLM, createSearchResult, updateResult } = get()
+  async search(searchInput, model, searchEngine, isFollowup) {
+    const { searchWeb, searchLLM, createSearchResult, updateResult, answer } = get()
     const id = nanoid()
     const controller = new AbortController()
     set({ id, searchInput, model, searchEngine, controller }, false);
@@ -47,12 +47,18 @@ export const SearchActions: StateCreator<
     updateResult({ id, key: 'sources', type: 'updateSearchResult', value: webResponse.sources })
     searchResult.searchEngineAnswer = webResponse.searchResults
     searchResult.sources = webResponse.sources
-    searchLLM(searchResult)
+    const answers = get().answer
+    if (answers.length > 1) {
+      const previousAnswer = answers[answers.length - 2]
+      searchLLM(searchResult, previousAnswer.answer)
+    } else {
+      searchLLM(searchResult)
+    }
   },
-  async searchLLM(answer: SearchResultType) {
+  async searchLLM(answer, previousAnswer) { 
     const { updateResult } = get()
     const ollama = new Ollama(answer.model)
-    const ollamaUrl = ollama.generateQueryUrl(answer.query, answer.searchEngineAnswer)
+    const ollamaUrl = previousAnswer ? ollama.generateFollowupQueryUrl(answer.query, answer.searchEngineAnswer, previousAnswer) : ollama.generateQueryUrl(answer.query, answer.searchEngineAnswer)
     const response = await fetch(ollamaUrl);
     const reader = response.body?.getReader();
     const decoder = new TextDecoder();

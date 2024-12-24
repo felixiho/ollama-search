@@ -20,17 +20,15 @@ export class Ollama {
         return `/api/ollama?${new URLSearchParams(params)}`;
     }
 
+    public generateFollowupQueryUrl(query: string, webSearchResults: string, answer: string): string { 
+        const prompt = `You are an expert assistant. Here are some web search results for context: \n\n${webSearchResults}\n\nNow answer the following question: ${query}. \n\nAnswer: ${answer}`;
 
-    public async handleFollowUp(followUpQuery: string, onStream: (chunk: string) => void): Promise<void> {
-        //     const conversationContext = this.context.join("\n\n");
-        //     const prompt = `${conversationContext}\n\nFollow-up question: ${followUpQuery}`;
-        //     this.context.push(`Q: ${followUpQuery}`);
-        //     const params = {
-        //         model: this.model,
-        //         query: prompt
-        //     }
-
-        //     return `/api/ollama?${new URLSearchParams(params)}`;
-        // }
+        const params = {
+            model: this.model,
+            prompt
+        }
+        return `/api/ollama?${new URLSearchParams(params)}`;
     }
+
+ 
 }

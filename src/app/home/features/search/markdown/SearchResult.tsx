@@ -1,11 +1,11 @@
 import { Flex, Typography } from "antd";
-import { SearchResultType } from "./types";
+import { SearchResultType } from "../types";
 import { createStyles } from "antd-style";
-import { Markdown } from "./Markdown";
+import { Markdown } from ".";
 
 const useStyles = createStyles(({ css }) => ({
     result: css`
-        max-width: 674px;
+        width: 100%;
     `,
     title: css`
         padding: 1rem 0;
@@ -22,7 +22,6 @@ export const SearchResult = ({ result }: { result: SearchResultType }) => {
         <Flex className={styles.result} vertical>
             <Title className={styles.title} level={3}>{result.query}</Title>
             <Markdown answer={result.answer} />
-
         </Flex>
     )
 }
