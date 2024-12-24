@@ -25,7 +25,7 @@ export default function FollowupSearch() {
     return (
         <Flex className={styles.followup}>
             <Flex className={styles.search} vertical>
-                <QuestionBox isFollowup={true} />
+                <QuestionBox />
             </Flex>
         </Flex>
     )

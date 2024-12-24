@@ -12,7 +12,7 @@ const useStyles = createStyles(({ css }) => ({
     width: 100%;
   `,
 }));
-export default function QuestionBox({ isFollowup }: { isFollowup?: boolean }) {
+export default function QuestionBox() {
   const { styles } = useStyles();
   return (
     <Flex justify="center">
@@ -24,7 +24,7 @@ export default function QuestionBox({ isFollowup }: { isFollowup?: boolean }) {
         }}
         className={styles.box_card}
       >
-        <SearchTextArea isFollowup={isFollowup} />
+        <SearchTextArea />
         <Flex justify="space-between" align="center">
           <Space wrap>
             <Models />

@@ -9,7 +9,7 @@ import { searchReducer, UpdateSearchResults } from "./reducer";
 
 
 export interface SearchActionsType {
-  search: (searchInput: string, model: string, searchEngine: SearchEngineTypes, isFollowup: boolean) => void;
+  search: (searchInput: string, model: string, searchEngine: SearchEngineTypes,) => void;
   searchWeb: (searchService: SearchService) => Promise<WebSearchType>;
   createSearchResult: (searchResult: SearchResultType) => void;
   searchLLM: (answer: SearchResultType, previousAnswer?: string) => Promise<void>;
@@ -22,15 +22,18 @@ export const SearchActions: StateCreator<
   [],
   SearchActionsType
 > = (set, get) => ({
-  async search(searchInput, model, searchEngine, isFollowup) {
-    const { searchWeb, searchLLM, createSearchResult, updateResult, answer } = get()
-    const id = nanoid()
-    const controller = new AbortController()
-    set({ id, searchInput, model, searchEngine, controller }, false);
-
-
+  async search(searchInput, model, searchEngine) {
+    const { searchWeb, searchLLM, createSearchResult, updateResult, id } = get()
+    if (id.length) {
+      set({ searchInput, loadingWeb: true, loading: true, model, searchEngine }, false);
+    } else {
+      const id = nanoid()
+      const controller = new AbortController()
+      set({ id, searchInput, loadingWeb: true, loading: true, model, searchEngine, controller }, false);
+    }
+    const resultId = nanoid()
     const searchResult: SearchResultType = {
-      id,
+      id: resultId,
       query: searchInput,
       model,
       searchEngine,
@@ -43,8 +46,8 @@ export const SearchActions: StateCreator<
 
     const searchService = new SearchService(model, searchEngine)
     const webResponse = await searchWeb(searchService)
-    updateResult({ id, key: 'searchEngineAnswer', type: 'updateSearchResult', value: webResponse.searchResults })
-    updateResult({ id, key: 'sources', type: 'updateSearchResult', value: webResponse.sources })
+    updateResult({ id: resultId, key: 'searchEngineAnswer', type: 'updateSearchResult', value: webResponse.searchResults })
+    updateResult({ id: resultId, key: 'sources', type: 'updateSearchResult', value: webResponse.sources })
     searchResult.searchEngineAnswer = webResponse.searchResults
     searchResult.sources = webResponse.sources
     const answers = get().answer
@@ -55,8 +58,9 @@ export const SearchActions: StateCreator<
       searchLLM(searchResult)
     }
   },
-  async searchLLM(answer, previousAnswer) { 
+  async searchLLM(answer, previousAnswer) {
     const { updateResult } = get()
+    set({ loadingWeb: false }, false)
     const ollama = new Ollama(answer.model)
     const ollamaUrl = previousAnswer ? ollama.generateFollowupQueryUrl(answer.query, answer.searchEngineAnswer, previousAnswer) : ollama.generateQueryUrl(answer.query, answer.searchEngineAnswer)
     const response = await fetch(ollamaUrl);
@@ -121,7 +125,7 @@ export const SearchActions: StateCreator<
   },
   createSearchResult(searchResult) {
     const { answer } = get()
-    set({ loadingWeb: false, answer: [...answer, searchResult] }, false)
+    set({ answer: [...answer, searchResult] }, false)
   },
   async searchWeb(searchService) {
     const { searchInput, controller } = get()
