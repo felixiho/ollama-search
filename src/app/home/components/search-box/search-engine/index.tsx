@@ -23,15 +23,21 @@ export default function SearchEngines() {
     error,
     selectedSearchEngine,
     setSelectedSearchEngine,
+    initializeSearchEngine
   ] = useSearchEngineStore((s) => [
     s.searchEngineList,
     s.error,
     s.selectedSearchEngine,
     s.setSelectedSearchEngine,
+    s.initializeSearchEngine
   ]);
 
   const [api, contextHolder] = notification.useNotification();
   const { styles } = useStyles();
+
+  useEffect(() => {
+    initializeSearchEngine();
+  }, [initializeSearchEngine]);
 
   useEffect(() => {
     if (error) {

@@ -24,6 +24,11 @@ export const ModelActions: StateCreator<
     }
   },
   setModelList(models) {
+    const { selectedModel } = get();
+    if (selectedModel) {
+      set({ modelList: models }, false);
+      return;
+    }
     set({ modelList: models, selectedModel: models[0].model }, false);
   },
   useGetModelList: () =>

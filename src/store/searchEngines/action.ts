@@ -5,6 +5,7 @@ import { SearchEngineStore } from "./store";
 
 export interface SearchEnginesActionsType {
   setSelectedSearchEngine: (engine: SearchEngineTypes) => void;
+  initializeSearchEngine: () => void;
 }
 
 export const SearchEngineActions: StateCreator<
@@ -13,6 +14,14 @@ export const SearchEngineActions: StateCreator<
   [],
   SearchEnginesActionsType
 > = (set) => ({
+  initializeSearchEngine() {
+    const { TAVILY_API_KEY, GOOGLE_API_KEY } = getServerConfig();
+    if (TAVILY_API_KEY) {
+      set({ selectedSearchEngine: SearchEngineTypes.TAVILY }, false);
+    } else if (GOOGLE_API_KEY) {
+      set({ selectedSearchEngine: SearchEngineTypes.GOOGLE }, false);
+    }
+  },
   setSelectedSearchEngine(engine) {
     const { TAVILY_API_KEY, GOOGLE_API_KEY } = getServerConfig();
     switch (engine) {
