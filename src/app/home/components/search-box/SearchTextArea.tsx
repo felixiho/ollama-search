@@ -53,6 +53,7 @@ export default function SearchTextArea() {
       return false
     }
     search(value, selectedModel, selectedSearchEngine);
+    setValue("");
   }
 
   return (
@@ -60,6 +61,7 @@ export default function SearchTextArea() {
       {contextHolder}
       <TextArea
         allowClear
+        autoFocus={true}
         placeholder="Ask anything..."
         autoSize={{ maxRows: 4, minRows: 3 }}
         size="large"
@@ -67,8 +69,10 @@ export default function SearchTextArea() {
           if (e.shiftKey) {
             return;
           }
+          e.preventDefault();
           handleSearch()
         }}
+        value={value}
         onChange={(e) => setValue(e.target.value)}
         onSubmit={handleSearch}
         style={{

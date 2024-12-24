@@ -17,6 +17,6 @@ export const intialSearchState: SearchStoreType = {
   id: "",
   searchInput: "",
   answer: [],
-  loading: true,
-  loadingWeb: true
+  loading: false,
+  loadingWeb: false
 };

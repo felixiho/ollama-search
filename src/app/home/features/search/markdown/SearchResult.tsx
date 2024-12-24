@@ -3,7 +3,7 @@ import { SearchResultType } from "../types";
 import { createStyles } from "antd-style";
 import { Markdown } from ".";
 import LoadingSkeleton from "./Loading";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const useStyles = createStyles(({ css }) => ({
     result: css`
@@ -21,11 +21,23 @@ const useStyles = createStyles(({ css }) => ({
 }));
 
 export const SearchResult = ({ result, isCurrent }: { result: SearchResultType, isCurrent: boolean }) => {
+    const [scrolling, setScrolling] = useState(false)
     const titleRef = useRef<HTMLDivElement>(null);
     const { styles } = useStyles();
     const { Title } = Typography;
+    const handleScroll = () => setScrolling(true);
 
     useEffect(() => {
+        window.addEventListener('wheel', handleScroll);
+        window.addEventListener('scroll', handleScroll);
+
+        return () => {
+            window.removeEventListener('wheel', handleScroll);
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
+    useEffect(() => {
+        if (scrolling) return;
         if (isCurrent && titleRef.current) {
             titleRef.current.scrollIntoView({ behavior: "smooth", block: "start", inline: 'start' });
         }

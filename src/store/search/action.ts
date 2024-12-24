@@ -23,7 +23,8 @@ export const SearchActions: StateCreator<
   SearchActionsType
 > = (set, get) => ({
   async search(searchInput, model, searchEngine) {
-    const { searchWeb, searchLLM, createSearchResult, updateResult, id } = get()
+    const { searchWeb, searchLLM, loading, loadingWeb, createSearchResult, updateResult, id } = get() 
+    if (loading || loadingWeb) return;
     if (id.length) {
       set({ searchInput, loadingWeb: true, loading: true, model, searchEngine }, false);
     } else {
