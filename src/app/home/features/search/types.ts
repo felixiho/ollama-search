@@ -6,10 +6,11 @@ export interface SearchResultType {
     query: string;
     searchEngine: SearchEngineTypes;
     model: string;
-    answer: string; 
+    answer: string;
     sources: string;
     searchEngineAnswer: string;
     createdAt: number;
+    completedAt?: number
 }
 
 export interface SearchResult {

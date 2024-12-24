@@ -11,7 +11,7 @@ export class Ollama {
     }
 
     public generateQueryUrl(query: string, webSearchResults: string): string {
-        const prompt = `You are an expert assistant. Here are some web search results for context: \n\n${webSearchResults}\n\nNow answer the following question: ${query}`;
+        const prompt = `You are an expert assistant. Here are some web search results for context: \n\n${webSearchResults}\n\nNow answer the following question: ${query}.`;
 
         const params = {
             model: this.model,

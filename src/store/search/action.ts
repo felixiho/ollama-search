@@ -106,6 +106,7 @@ export const SearchActions: StateCreator<
         console.warn('Failed to parse final chunk:', buffer, e);
       }
     }
+    updateResult({ id: answer.id, key: 'completedAt', type: 'updateSearchResult', value: Date.now() })
     set({ loading: false }, false)
   },
   updateResult(payload) {
