@@ -1,7 +1,7 @@
 import { ModelActions, ModelActionsType } from "./action";
 import { initialModelState, ModelStoreType } from "./initialState";
 import { StateCreator } from "zustand";
-import { devtools, subscribeWithSelector } from "zustand/middleware";
+import { devtools, persist, subscribeWithSelector } from "zustand/middleware";
 import { shallow } from "zustand/shallow";
 import { createWithEqualityFn } from "zustand/traditional";
 
@@ -13,10 +13,13 @@ const createStore: StateCreator<ModelStore, []> = (...params) => ({
 });
 
 export const useModelStore = createWithEqualityFn<ModelStore>()(
-  subscribeWithSelector(
-    devtools(createStore, {
-      name: "Ollama search",
-    })
-  ),
+  persist(
+    subscribeWithSelector(
+      devtools(createStore, {
+        name: "Ollama search",
+      })
+    ), {
+    name: 'OLLAMA_MODEL_STORE',
+  }),
   shallow
 );

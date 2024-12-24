@@ -1,5 +1,5 @@
 import { StateCreator } from "zustand";
-import { devtools, subscribeWithSelector } from "zustand/middleware";
+import { devtools, persist, subscribeWithSelector } from "zustand/middleware";
 import { shallow } from "zustand/shallow";
 import { createWithEqualityFn } from "zustand/traditional";
 import {
@@ -17,10 +17,13 @@ const createStore: StateCreator<SearchEngineStore, []> = (...params) => ({
 });
 
 export const useSearchEngineStore = createWithEqualityFn<SearchEngineStore>()(
-  subscribeWithSelector(
-    devtools(createStore, {
-      name: "Ollama search",
-    })
-  ),
+  persist(
+    subscribeWithSelector(
+      devtools(createStore, {
+        name: "Ollama search",
+      })
+    ), {
+    name: 'OLLAMA_SEARCH_ENGINE_STORE',
+  }),
   shallow
 );
