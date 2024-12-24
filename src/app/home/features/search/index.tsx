@@ -6,9 +6,9 @@ import { SearchResult } from "./SearchResult";
 export const Search = () => {
 
     const [allSearchResults] = useSearchStore((s) => [SearchSelectors.getAllSearchResults(s)]);
-    
+
     return (
-        <Flex>
+        <Flex justify="center">
             {allSearchResults.map((result) => (
                 <SearchResult key={result.id} result={result} />
             ))}

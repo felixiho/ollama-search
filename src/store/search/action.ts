@@ -53,23 +53,57 @@ export const SearchActions: StateCreator<
     const { updateResult } = get()
     const ollama = new Ollama(answer.model)
     const ollamaUrl = ollama.generateQueryUrl(answer.query, answer.searchEngineAnswer)
-    const response = await fetch(ollamaUrl)
+    const response = await fetch(ollamaUrl);
     const reader = response.body?.getReader();
     const decoder = new TextDecoder();
     if (!reader) {
       console.error('No response body received from API');
       return;
     }
-    let output = ''
+    let output = '';
+    let buffer = '';
+
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
+
       const decoded = decoder.decode(value, { stream: true });
       if (decoded.length) {
-        const chunk = JSON.parse(decoded)
-        const response = chunk.response
-        output += response
-        updateResult({ id: answer.id, key: 'answer', type: 'updateSearchResult', value: output })
+        buffer += decoded;
+        const chunks = buffer.split('\n');
+
+        for (let i = 0; i < chunks.length - 1; i++) {
+          const chunk = chunks[i].trim();
+          if (chunk) {
+            try {
+              const parsed = JSON.parse(chunk);
+              output += parsed.response;
+              updateResult({
+                id: answer.id,
+                key: 'answer',
+                type: 'updateSearchResult',
+                value: output
+              });
+            } catch (e) {
+              console.warn('Failed to parse chunk:', chunk, e);
+            }
+          }
+        }
+        buffer = chunks[chunks.length - 1];
+      }
+    }
+    if (buffer.trim()) {
+      try {
+        const parsed = JSON.parse(buffer);
+        output += parsed.response;
+        updateResult({
+          id: answer.id,
+          key: 'answer',
+          type: 'updateSearchResult',
+          value: output
+        });
+      } catch (e) {
+        console.warn('Failed to parse final chunk:', buffer, e);
       }
     }
     set({ loading: false }, false)
