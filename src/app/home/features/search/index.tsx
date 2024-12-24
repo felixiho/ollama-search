@@ -1,5 +1,5 @@
 import { SearchSelectors, useSearchStore } from "@/store/search";
-import { Flex, Grid } from "antd";
+import { Flex } from "antd";
 import { SearchResult } from "./markdown/SearchResult";
 import FollowupSearch from "./followup/Index";
 import { createStyles } from "antd-style";
@@ -21,10 +21,10 @@ export const Search = () => {
     return (
         <Flex justify="center" wrap className={styles.results}>
             <Flex vertical className={styles.child}  >
-                {allSearchResults.map((result) => (
-                    <SearchResult key={result.id} result={result} />
+                {allSearchResults.map((result, index) => (
+                    <SearchResult key={result.id} result={result} isCurrent={index === allSearchResults.length - 1} />
                 ))}
-                <FollowupSearch  />
+                <FollowupSearch />
 
             </Flex>
         </Flex>
