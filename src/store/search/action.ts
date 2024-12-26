@@ -6,7 +6,7 @@ import { SearchService } from "@/services/Search";
 import { SearchResultType, WebSearchType } from "@/app/home/features/search/types";
 import { Ollama } from "@/services/models/Ollama";
 import { searchReducer, UpdateSearchResults } from "./reducer";
-
+import { IndexedDB } from "@/config/database";
 
 export interface SearchActionsType {
   search: (searchInput: string, model: string, searchEngine: SearchEngineTypes,) => void;
@@ -14,6 +14,7 @@ export interface SearchActionsType {
   createSearchResult: (searchResult: SearchResultType) => void;
   searchLLM: (answer: SearchResultType, previousAnswer?: string) => Promise<void>;
   updateResult: (payload: UpdateSearchResults) => void;
+  updateDataBase: () => void;
 }
 
 export const SearchActions: StateCreator<
@@ -23,7 +24,7 @@ export const SearchActions: StateCreator<
   SearchActionsType
 > = (set, get) => ({
   async search(searchInput, model, searchEngine) {
-    const { searchWeb, searchLLM, loading, loadingWeb, createSearchResult, updateResult, id } = get() 
+    const { searchWeb, searchLLM, loading, loadingWeb, createSearchResult, updateResult, id } = get()
     if (loading || loadingWeb) return;
     if (id.length) {
       set({ searchInput, loadingWeb: true, loading: true, model, searchEngine }, false);
@@ -60,7 +61,7 @@ export const SearchActions: StateCreator<
     }
   },
   async searchLLM(answer, previousAnswer) {
-    const { updateResult } = get()
+    const { updateResult, updateDataBase } = get()
     set({ loadingWeb: false }, false)
     const ollama = new Ollama(answer.model)
     const ollamaUrl = previousAnswer ? ollama.generateFollowupQueryUrl(answer.query, answer.searchEngineAnswer, previousAnswer) : ollama.generateQueryUrl(answer.query, answer.searchEngineAnswer)
@@ -119,6 +120,19 @@ export const SearchActions: StateCreator<
     }
     updateResult({ id: answer.id, key: 'completedAt', type: 'updateSearchResult', value: Date.now() })
     set({ loading: false }, false)
+    await updateDataBase()
+  },
+
+  async updateDataBase() {
+    const { id, answer, model, searchEngine } = get()
+    const db = new IndexedDB('Ollama-Search', 'history')
+    await db.openDB()
+    const exists = await db.readRecord(id)
+    if (exists) {
+      await db.updateRecord(id, { ...exists, answer, updatedAt: Date.now() })
+    } else {
+      await db.createRecord(id, { answer, model, searchEngine, createdAt: Date.now(), updatedAt: Date.now() })
+    }
   },
   updateResult(payload) {
     const answer = searchReducer(get().answer, payload);
