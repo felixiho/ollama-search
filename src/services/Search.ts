@@ -70,7 +70,7 @@ export class SearchService {
         }
 
         const uniqueSources = new Map<string, SearchResult>();
-        sourcesList.forEach(source => {
+        sourcesList?.forEach(source => {
             if (!uniqueSources.has(source.url)) {
                 uniqueSources.set(source.url, source);
             }

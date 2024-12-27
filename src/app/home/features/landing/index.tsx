@@ -6,9 +6,12 @@ import { createStyles } from "antd-style";
 import { useSearchStore } from "@/store/search";
 import { Search } from "../search";
 
-const useStyles = createStyles(({ css }) => ({
+const useStyles = createStyles(({ css, token }) => ({
   landing: css`
-    margin-top: 8rem;
+    padding-top: 8rem;
+    width: 100%;
+    background-color: ${token.colorBgBase};
+    border-radius: 0.5rem;
   `,
 }));
 export default function Landing() {

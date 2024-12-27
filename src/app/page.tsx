@@ -1,12 +1,10 @@
-import styles from "./page.module.css";
-import NavHeader from "./home/components/navigation/NavHeader";
-import Landing from "./home/features/landing";
+import HomePage from "./home/features";
+import styles from "./page.module.css"; 
 
 export default function Home() {
   return (
-    <section className={styles.page}>
-      <NavHeader />
-      <Landing />
+    <section className={styles.page}> 
+      <HomePage />
     </section>
   );
 }

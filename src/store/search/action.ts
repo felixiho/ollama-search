@@ -7,6 +7,7 @@ import { SearchResultType, WebSearchType } from "@/app/home/features/search/type
 import { Ollama } from "@/services/models/Ollama";
 import { searchReducer, UpdateSearchResults } from "./reducer";
 import { IndexedDB } from "@/config/database";
+import { DB_NAME, HISTORY_STORE } from "../history/constants";
 
 export interface SearchActionsType {
   search: (searchInput: string, model: string, searchEngine: SearchEngineTypes,) => void;
@@ -118,20 +119,20 @@ export const SearchActions: StateCreator<
         console.warn('Failed to parse final chunk:', buffer, e);
       }
     }
-    updateResult({ id: answer.id, key: 'completedAt', type: 'updateSearchResult', value: Date.now() })
     set({ loading: false }, false)
     await updateDataBase()
+    updateResult({ id: answer.id, key: 'completedAt', type: 'updateSearchResult', value: Date.now() })
   },
 
   async updateDataBase() {
     const { id, answer, model, searchEngine } = get()
-    const db = new IndexedDB('Ollama-Search', 'history')
+    const db = new IndexedDB(DB_NAME, HISTORY_STORE)
     await db.openDB()
     const exists = await db.readRecord(id)
     if (exists) {
       await db.updateRecord(id, { ...exists, answer, updatedAt: Date.now() })
     } else {
-      await db.createRecord(id, { answer, model, searchEngine, createdAt: Date.now(), updatedAt: Date.now() })
+      await db.createRecord(id, { id, answer, model, searchEngine, createdAt: Date.now(), updatedAt: Date.now() })
     }
   },
   updateResult(payload) {

@@ -6,10 +6,11 @@ import SearchEngines from "../../components/search-box/search-engine";
 
 import Upload from "../../components/search-box/upload";
 
-const useStyles = createStyles(({ css }) => ({
+const useStyles = createStyles(({ css, token }) => ({
   box_card: css`
-    max-width: 675px;
+    max-width: 640px;
     width: 100%;
+    border-color: ${token.colorBorder}
   `,
 }));
 export default function QuestionBox() {

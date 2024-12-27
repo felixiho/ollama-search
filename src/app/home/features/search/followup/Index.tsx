@@ -11,7 +11,7 @@ const useStyles = createStyles(({ css }) => ({
         position: fixed;
         bottom: 1rem;
         width: 100%;
-        max-width: 674px;
+        max-width: 640px;
     `,
     search: css`
         width: 100%;
