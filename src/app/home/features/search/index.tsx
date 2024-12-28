@@ -11,16 +11,17 @@ const useStyles = createStyles(({ css, token }) => ({
     results: css` 
         width: 100%;
         background-color: ${token.colorBgBase};
-  
+        padding-bottom: 12rem;
     `,
     child: css`
         width: 100%;
         max-width: 640px;
+        height: 100%;
     `
 }))
 export const Search = () => {
 
-    const [allSearchResults, lastResultComplete] = useSearchStore((s) => [SearchSelectors.getAllSearchResults(s), SearchSelectors.getLastResultStatus(s)]);
+    const [allSearchResults, lastResultComplete, loading] = useSearchStore((s) => [SearchSelectors.getAllSearchResults(s), SearchSelectors.getLastResultStatus(s), SearchSelectors.getSearchResultLoading(s)]);
     const [refreshHistory] = useHistoryStore(s => [s.initializeHistory])
 
     const { styles } = useStyles();
@@ -35,7 +36,7 @@ export const Search = () => {
         <Flex justify="center" wrap className={styles.results}>
             <Flex vertical className={styles.child}  >
                 {allSearchResults.map((result, index) => (
-                    <SearchResult key={result.id} result={result} isCurrent={index === allSearchResults.length - 1} />
+                    <SearchResult loading={loading} key={result.id} result={result} isCurrent={index === allSearchResults.length - 1} />
                 ))}
                 <FollowupSearch />
 

@@ -6,7 +6,7 @@ const getAllSearchResults = (s: SearchStore) => s.answer;
 
 const getSearchResultById = (s: SearchStore, id: string) => s.answer.find((result) => result.id === id);
 
-const getSearchResultLoading = (s: SearchStore) => s.loading;
+const getSearchResultLoading = (s: SearchStore) => s.loading || s.loadingWeb;
 
 const getSearchResultWebLoading = (s: SearchStore) => s.loadingWeb;
 

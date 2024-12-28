@@ -12,6 +12,8 @@ const useStyles = createStyles(({ css, token }) => ({
         border-left: 1px solid ${token.colorBorder};
         margin-left:  1.5rem;
         padding-left: 0.25rem;
+        max-height: 400px;
+        overflow: hidden scroll;
         mask-image: linear-gradient(to right, black 85%, transparent 97%);
         & > p {
             color: ${token.colorTextDescription};

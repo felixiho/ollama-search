@@ -8,6 +8,7 @@ import { Ollama } from "@/services/models/Ollama";
 import { searchReducer, UpdateSearchResults } from "./reducer";
 import { IndexedDB } from "@/config/database";
 import { DB_NAME, HISTORY_STORE } from "../history/constants";
+import { StreamHandler } from "@/services/Stream";
 
 export interface SearchActionsType {
   search: (searchInput: string, model: string, searchEngine: SearchEngineTypes,) => void;
@@ -62,66 +63,49 @@ export const SearchActions: StateCreator<
     }
   },
   async searchLLM(answer, previousAnswer) {
-    const { updateResult, updateDataBase } = get()
+    const { updateResult, updateDataBase, } = get()
     set({ loadingWeb: false }, false)
     const ollama = new Ollama(answer.model)
     const ollamaUrl = previousAnswer ? ollama.generateFollowupQueryUrl(answer.query, answer.searchEngineAnswer, previousAnswer) : ollama.generateQueryUrl(answer.query, answer.searchEngineAnswer)
     const response = await fetch(ollamaUrl);
     const reader = response.body?.getReader();
-    const decoder = new TextDecoder();
     if (!reader) {
       console.error('No response body received from API');
       return;
     }
-    let output = '';
-    let buffer = '';
 
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
+    const handler = new StreamHandler(reader)
+    handler.addEventListener('message', (event: any) => {
+      const { output } = event.detail
+      updateResult({
+        id: answer.id,
+        key: 'answer',
+        type: 'updateSearchResult',
+        value: output
+      });
+    });
 
-      const decoded = decoder.decode(value, { stream: true });
-      if (decoded.length) {
-        buffer += decoded;
-        const chunks = buffer.split('\n');
+    handler.addEventListener('error', (event: any) => {
+      const { message, error, chunk } = event.detail;
+      console.warn(message, error, chunk);
+    });
 
-        for (let i = 0; i < chunks.length - 1; i++) {
-          const chunk = chunks[i].trim();
-          if (chunk) {
-            try {
-              const parsed = JSON.parse(chunk);
-              output += parsed.response;
-              updateResult({
-                id: answer.id,
-                key: 'answer',
-                type: 'updateSearchResult',
-                value: output
-              });
-            } catch (e) {
-              console.warn('Failed to parse chunk:', chunk, e);
-            }
-          }
-        }
-        buffer = chunks[chunks.length - 1];
-      }
-    }
-    if (buffer.trim()) {
-      try {
-        const parsed = JSON.parse(buffer);
-        output += parsed.response;
-        updateResult({
-          id: answer.id,
-          key: 'answer',
-          type: 'updateSearchResult',
-          value: output
-        });
-      } catch (e) {
-        console.warn('Failed to parse final chunk:', buffer, e);
-      }
-    }
-    set({ loading: false }, false)
-    await updateDataBase()
-    updateResult({ id: answer.id, key: 'completedAt', type: 'updateSearchResult', value: Date.now() })
+    handler.addEventListener('finish', async (event: any) => {
+      const { output } = event.detail;
+      updateResult({
+        id: answer.id,
+        key: 'answer',
+        type: 'updateSearchResult',
+        value: output
+      });
+      set({ loading: false }, false)
+      await updateDataBase()
+      updateResult({ id: answer.id, key: 'completedAt', type: 'updateSearchResult', value: Date.now() })
+    });
+
+    handler.addEventListener('abort', () => {
+      //todo: handle abort
+    }); 
   },
 
   async updateDataBase() {

@@ -16,8 +16,8 @@ const useStyles = createStyles(({ css, token }) => ({
     max-width: 240px; 
     padding-top: 1.5rem; 
     position: fixed;
-  background-color: ${token.colorFillTertiary};
-  height: 100%;
+    background-color: ${token.colorFillTertiary};
+    height: 100%;
 
   `,
 

@@ -23,8 +23,10 @@ export default function Landing() {
   }
   return (
     <Flex className={styles.landing} vertical>
-      <WelcomeText />
-      <QuestionBox />
+      <Flex vertical>
+        <WelcomeText />
+        <QuestionBox />
+      </Flex>
     </Flex>
   );
 }

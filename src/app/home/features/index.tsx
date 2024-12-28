@@ -9,7 +9,8 @@ const useStyles = createStyles(({ css, token }) => ({
     page: css`  
         background-color: ${token.colorFillTertiary};
         display: flex;
-        padding: 0.5rem;
+        padding: 0 0.5rem;
+        
     `,
 }));
 

@@ -14,18 +14,20 @@ const useStyles = createStyles(({ css }) => ({
         padding-top: 1rem;
         text-align: left;
         width: 100%;
+        scroll-margin-top: 5rem; 
+        margin-top: 1rem;
     `,
     tag: css`
         margin-bottom: 1.5rem;
     `
 }));
 
-export const SearchResult = ({ result, isCurrent }: { result: SearchResultType, isCurrent: boolean }) => {
+export const SearchResult = ({ result, isCurrent, loading }: { result: SearchResultType, isCurrent: boolean, loading: boolean }) => {
     const [scrolling, setScrolling] = useState(false)
     const titleRef = useRef<HTMLDivElement>(null);
     const { styles } = useStyles();
     const { Title } = Typography;
-    const handleScroll = () => setScrolling(true);
+    const handleScroll = () => { setScrolling(true) };
 
     useEffect(() => {
         window.addEventListener('wheel', handleScroll);
@@ -36,6 +38,13 @@ export const SearchResult = ({ result, isCurrent }: { result: SearchResultType, 
             window.removeEventListener('scroll', handleScroll);
         };
     }, []);
+
+    useEffect(() => { 
+        if (loading && titleRef.current) {
+            titleRef.current.scrollIntoView({ behavior: "smooth", block: "start", inline: 'start' });
+        }
+    }, [loading])
+
     useEffect(() => {
         if (scrolling) return;
         if (isCurrent && titleRef.current) {
