@@ -1,10 +1,8 @@
 "use client";
 
 import { createStyles } from "antd-style";
-import NavHeader from "../components/navigation/NavHeader";
-import Landing from "./landing";
-import { useEffect } from "react";
-import { useSearchStore } from "@/store/search";
+import NavHeader from "../../home/components/navigation/NavHeader";
+import { Search } from "../../home/features/search";
 
 
 const useStyles = createStyles(({ css, token }) => ({
@@ -16,18 +14,12 @@ const useStyles = createStyles(({ css, token }) => ({
     `,
 }));
 
-export default function HomePage() {
+export default function SearchPage({ id }: { id: string }) {
     const { styles } = useStyles();
-    const [reset] = useSearchStore(s => [s.resetSearch])
-
-    useEffect(() => {
-        reset()
-    }, [])
-
     return (
         <div className={styles.page}>
             <NavHeader />
-            <Landing />
+            <Search id={id} />
         </div>
     );
 }

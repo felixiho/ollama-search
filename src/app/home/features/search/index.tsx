@@ -1,10 +1,12 @@
 import { SearchSelectors, useSearchStore } from "@/store/search";
-import { Flex } from "antd";
+import { Flex, Skeleton, Spin } from "antd";
 import { SearchResult } from "./markdown/SearchResult";
 import FollowupSearch from "./followup/Index";
 import { createStyles } from "antd-style";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useHistoryStore } from "@/store/history";
+import LoadingSkeleton from "./markdown/Loading";
+import { Loader2 } from "lucide-react";
 
 
 const useStyles = createStyles(({ css, token }) => ({
@@ -19,19 +21,40 @@ const useStyles = createStyles(({ css, token }) => ({
         height: 100%;
     `
 }))
-export const Search = () => {
+export const Search = ({ id }: { id?: string }) => {
+    const [allSearchResults, lastResultComplete, loading, createSearchResults, searchId] = useSearchStore((s) => [SearchSelectors.getAllSearchResults(s), SearchSelectors.getLastResultStatus(s), SearchSelectors.getSearchResultLoading(s), s.createResultFromHistory, s.id]);
+    const [refreshHistory, getAnswerFromHistory] = useHistoryStore(s => [s.initializeHistory, s.getAnswerById])
 
-    const [allSearchResults, lastResultComplete, loading] = useSearchStore((s) => [SearchSelectors.getAllSearchResults(s), SearchSelectors.getLastResultStatus(s), SearchSelectors.getSearchResultLoading(s)]);
-    const [refreshHistory] = useHistoryStore(s => [s.initializeHistory])
+    const [routeChanged, setRouteChanged] = useState(false)
 
     const { styles } = useStyles();
+
+    useEffect(() => {
+        if (!id) return
+        const initializeAnswer = async () => {
+            const answer = await getAnswerFromHistory(id)
+            if (answer) {
+                createSearchResults(answer)
+            }
+        }
+        initializeAnswer()
+    }, [])
+
+
 
     useEffect(() => {
         if (lastResultComplete) {
             refreshHistory()
         }
+        if (searchId.length && !id) {
+            window.history.pushState(null, '', `/search/${searchId}`);
+        }
     }, [lastResultComplete])
 
+
+    if (id && !allSearchResults.length) {
+        return null;
+    }
     return (
         <Flex justify="center" wrap className={styles.results}>
             <Flex vertical className={styles.child}  >

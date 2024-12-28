@@ -3,6 +3,7 @@ import { SearchSelectors, useSearchStore } from "@/store/search";
 import { Flex, Space, Typography } from "antd";
 import { createStyles } from "antd-style";
 import { GalleryVerticalEnd, LayoutGrid, SquareStack } from "lucide-react";
+import Link from "next/link";
 import { useEffect } from "react";
 
 const { Title, Paragraph } = Typography
@@ -15,7 +16,7 @@ const useStyles = createStyles(({ css, token }) => ({
         max-height: 400px;
         overflow: hidden scroll;
         mask-image: linear-gradient(to right, black 85%, transparent 97%);
-        & > p {
+        & > a {
             color: ${token.colorTextDescription};
             font-size: 0.9rem;
             padding: 0.5rem 0 0.5rem 0.5rem;
@@ -44,13 +45,14 @@ export default function History() {
 
         fetchHistory();
     }, [initializeHistory]);
- 
+
 
     return (
         <Flex vertical className={styles.history}>
             {
-                allHistory.map(history =>
-                    <p key={history.id}>{history.answer[0].query}</p>)
+                allHistory.map(history => 
+                    <Link key={history.id} href={`/search/${history.id}`} >{history.answer[0].query}</Link>
+                )
             }
         </Flex>
     )

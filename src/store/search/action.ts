@@ -2,21 +2,24 @@ import { StateCreator } from "zustand";
 import { SearchStore } from "./store";
 import { SearchEngineTypes } from "@/app/home/components/search-box/search-engine/types";
 import { nanoid } from 'nanoid'
+import { intialSearchState } from './initialState'
 import { SearchService } from "@/services/Search";
 import { SearchResultType, WebSearchType } from "@/app/home/features/search/types";
 import { Ollama } from "@/services/models/Ollama";
 import { searchReducer, UpdateSearchResults } from "./reducer";
-import { IndexedDB } from "@/config/database";
+import { HistoryData, IndexedDB } from "@/config/database";
 import { DB_NAME, HISTORY_STORE } from "../history/constants";
 import { StreamHandler } from "@/services/Stream";
 
 export interface SearchActionsType {
   search: (searchInput: string, model: string, searchEngine: SearchEngineTypes,) => void;
+  resetSearch: () => void;
   searchWeb: (searchService: SearchService) => Promise<WebSearchType>;
   createSearchResult: (searchResult: SearchResultType) => void;
   searchLLM: (answer: SearchResultType, previousAnswer?: string) => Promise<void>;
   updateResult: (payload: UpdateSearchResults) => void;
   updateDataBase: () => void;
+  createResultFromHistory: (historyData: HistoryData) => void;
 }
 
 export const SearchActions: StateCreator<
@@ -105,7 +108,7 @@ export const SearchActions: StateCreator<
 
     handler.addEventListener('abort', () => {
       //todo: handle abort
-    }); 
+    });
   },
 
   async updateDataBase() {
@@ -126,6 +129,12 @@ export const SearchActions: StateCreator<
   createSearchResult(searchResult) {
     const { answer } = get()
     set({ answer: [...answer, searchResult] }, false)
+  },
+  createResultFromHistory(historyData) {
+    set({ ...historyData }, false)
+  },
+  resetSearch() {
+    set({ ...intialSearchState })
   },
   async searchWeb(searchService) {
     const { searchInput, controller } = get()

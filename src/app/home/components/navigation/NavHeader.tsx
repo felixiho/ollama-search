@@ -5,6 +5,7 @@ import { Button, Flex, Typography } from "antd";
 import { createStyles } from "antd-style";
 import { Plus } from "lucide-react";
 import NavItems from "../../features/sidebar";
+import { useRouter } from "next/navigation";
 
 const useStyles = createStyles(({ css, token }) => ({
   sidebar: css`
@@ -36,9 +37,10 @@ const useStyles = createStyles(({ css, token }) => ({
 export default function NavHeader() {
   const { styles } = useStyles();
   const { Title } = Typography;
+  const router = useRouter()
 
   const handleNewSearch = () => {
-    console.log("new search");
+    router.push('/')
   }
 
   return (

@@ -3,6 +3,7 @@ import { DM_Sans } from "next/font/google";
 import "./globals.css";
 import { ConfigProvider } from "antd";
 import StyleRegistry from "@/styles/StyleRegistry";
+import styles from "./page.module.css";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -23,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={` ${dmSans.variable}`}>
+      <body className={`${dmSans.variable} ${styles.page}`}>
         <StyleRegistry>
           <ConfigProvider
             theme={{
