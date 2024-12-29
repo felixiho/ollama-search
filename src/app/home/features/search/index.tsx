@@ -1,12 +1,11 @@
 import { SearchSelectors, useSearchStore } from "@/store/search";
-import { Flex, Skeleton, Spin } from "antd";
+import { Flex, } from "antd";
 import { SearchResult } from "./markdown/SearchResult";
 import FollowupSearch from "./followup/Index";
 import { createStyles } from "antd-style";
 import { useEffect, useState } from "react";
 import { useHistoryStore } from "@/store/history";
-import LoadingSkeleton from "./markdown/Loading";
-import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 
 const useStyles = createStyles(({ css, token }) => ({
@@ -25,7 +24,7 @@ export const Search = ({ id }: { id?: string }) => {
     const [allSearchResults, lastResultComplete, loading, createSearchResults, searchId] = useSearchStore((s) => [SearchSelectors.getAllSearchResults(s), SearchSelectors.getLastResultStatus(s), SearchSelectors.getSearchResultLoading(s), s.createResultFromHistory, s.id]);
     const [refreshHistory, getAnswerFromHistory] = useHistoryStore(s => [s.initializeHistory, s.getAnswerById])
 
-    const [routeChanged, setRouteChanged] = useState(false)
+    const router = useRouter()
 
     const { styles } = useStyles();
 
@@ -47,7 +46,9 @@ export const Search = ({ id }: { id?: string }) => {
             refreshHistory()
         }
         if (searchId.length && !id) {
-            window.history.pushState(null, '', `/search/${searchId}`);
+            router.push(`/search/${searchId}`, {
+                scroll: false
+            })
         }
     }, [lastResultComplete])
 

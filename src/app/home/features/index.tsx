@@ -24,6 +24,7 @@ export default function HomePage() {
         reset()
     }, [])
 
+
     return (
         <div className={styles.page}>
             <NavHeader />

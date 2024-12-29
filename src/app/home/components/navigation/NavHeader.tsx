@@ -38,8 +38,11 @@ export default function NavHeader() {
   const { styles } = useStyles();
   const { Title } = Typography;
   const router = useRouter()
+  const [reset] = useSearchStore(s => [s.resetSearch])
+
 
   const handleNewSearch = () => {
+    reset()
     router.push('/')
   }
 
