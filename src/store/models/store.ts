@@ -17,9 +17,11 @@ export const useModelStore = createWithEqualityFn<ModelStore>()(
     subscribeWithSelector(
       devtools(createStore, {
         name: "Ollama search",
-      })
-    ), {
-    name: 'OLLAMA_MODEL_STORE',
-  }),
-  shallow
+      }),
+    ),
+    {
+      name: "OLLAMA_MODEL_STORE",
+    },
+  ),
+  shallow,
 );

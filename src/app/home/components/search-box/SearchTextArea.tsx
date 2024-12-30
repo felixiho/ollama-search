@@ -32,29 +32,28 @@ export default function SearchTextArea() {
   const [value, setValue] = useState("");
 
   const [selectedModel] = useModelStore((s) => [s.selectedModel]);
-  const [selectedSearchEngine] = useSearchEngineStore((s) => [s.selectedSearchEngine]);
+  const [selectedSearchEngine] = useSearchEngineStore((s) => [
+    s.selectedSearchEngine,
+  ]);
 
   const [search] = useSearchStore((s) => [s.search]);
-
 
   const handleSearch = () => {
     if (!selectedModel) {
       api.warning({
-        message:
-          "Please select a model before searching.",
+        message: "Please select a model before searching.",
       });
-      return false
+      return false;
     }
     if (!selectedSearchEngine) {
       api.warning({
-        message:
-          "Please select a search engine before searching.",
+        message: "Please select a search engine before searching.",
       });
-      return false
+      return false;
     }
     search(value, selectedModel, selectedSearchEngine);
     setValue("");
-  }
+  };
 
   return (
     <>
@@ -70,7 +69,7 @@ export default function SearchTextArea() {
             return;
           }
           e.preventDefault();
-          handleSearch()
+          handleSearch();
         }}
         value={value}
         onChange={(e) => setValue(e.target.value)}
@@ -80,7 +79,6 @@ export default function SearchTextArea() {
         }}
         className={styles.searchTwo}
       />
-
     </>
   );
 }

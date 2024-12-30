@@ -15,7 +15,7 @@ export const SearchEngineActions: StateCreator<
   SearchEnginesActionsType
 > = (set, get) => ({
   initializeSearchEngine() {
-    const { selectedSearchEngine } = get()
+    const { selectedSearchEngine } = get();
     if (selectedSearchEngine) return;
     const { TAVILY_API_KEY, GOOGLE_API_KEY } = getServerConfig();
     if (TAVILY_API_KEY) {

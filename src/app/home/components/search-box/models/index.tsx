@@ -47,7 +47,7 @@ export default function Models() {
     ];
 
     if (data && data.models?.length) {
-      const modelsFormatted: MenuProps["items"] = data.models.map((m: any) => ({
+      const modelsFormatted: MenuProps["items"] = data.models.map((m) => ({
         key: m.model,
         label: (
           <span className={selectedModel === m.model ? styles.active : ""}>

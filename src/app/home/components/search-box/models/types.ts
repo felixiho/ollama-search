@@ -15,7 +15,3 @@ export interface ModelEntry {
   digest: string;
   details: ModelDetails;
 }
-
-
- 
- 

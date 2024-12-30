@@ -32,9 +32,9 @@ export const ModelActions: StateCreator<
   useGetModelList: () =>
     useSWR<{ models: ModelEntry[] }>("ollama", modelService.getModelsList, {
       onSuccess: (data) => {
-        const { setModelList, setError } = get()
-        setModelList(data.models)
-        setError(undefined)
+        const { setModelList, setError } = get();
+        setModelList(data.models);
+        setError(undefined);
       },
       onError: (err) => {
         get().setError(err.toString());

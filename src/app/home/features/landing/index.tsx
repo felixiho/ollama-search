@@ -16,10 +16,10 @@ const useStyles = createStyles(({ css, token }) => ({
 }));
 export default function Landing() {
   const { styles } = useStyles();
-  const [searchInput,] = useSearchStore((s) => [s.searchInput,]);
+  const [searchInput] = useSearchStore((s) => [s.searchInput]);
 
   if (searchInput.length) {
-    return <Search />
+    return <Search />;
   }
   return (
     <Flex className={styles.landing} vertical>

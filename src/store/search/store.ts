@@ -6,8 +6,7 @@ import { createWithEqualityFn } from "zustand/traditional";
 import { intialSearchState, SearchStoreType } from "./initialState";
 import { SearchActions, SearchActionsType } from "./action";
 
-export type SearchStore = SearchStoreType &
-  SearchActionsType;
+export type SearchStore = SearchStoreType & SearchActionsType;
 
 const createStore: StateCreator<SearchStore, []> = (...params) => ({
   ...intialSearchState,
@@ -18,7 +17,7 @@ export const useSearchStore = createWithEqualityFn<SearchStore>()(
   subscribeWithSelector(
     devtools(createStore, {
       name: "Ollama search",
-    })
+    }),
   ),
-  shallow
+  shallow,
 );

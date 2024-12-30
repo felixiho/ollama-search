@@ -21,9 +21,11 @@ export const useSearchEngineStore = createWithEqualityFn<SearchEngineStore>()(
     subscribeWithSelector(
       devtools(createStore, {
         name: "Ollama search",
-      })
-    ), {
-    name: 'OLLAMA_SEARCH_ENGINE_STORE',
-  }),
-  shallow
+      }),
+    ),
+    {
+      name: "OLLAMA_SEARCH_ENGINE_STORE",
+    },
+  ),
+  shallow,
 );

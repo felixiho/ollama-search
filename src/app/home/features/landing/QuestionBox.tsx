@@ -10,7 +10,7 @@ const useStyles = createStyles(({ css, token }) => ({
   box_card: css`
     max-width: 640px;
     width: 100%;
-    border-color: ${token.colorBorder}
+    border-color: ${token.colorBorder};
   `,
 }));
 export default function QuestionBox() {

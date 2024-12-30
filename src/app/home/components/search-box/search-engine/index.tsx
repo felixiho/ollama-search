@@ -1,11 +1,9 @@
-import {
-  useSearchEngineStore,
-} from "@/store/searchEngines";
+import { useSearchEngineStore } from "@/store/searchEngines";
 import { Button, notification } from "antd";
 import type { MenuProps } from "antd";
 import { Dropdown, Space } from "antd";
 import { createStyles } from "antd-style";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 
 const useStyles = createStyles(({ css, token }) => ({
   link: css`
@@ -23,13 +21,13 @@ export default function SearchEngines() {
     error,
     selectedSearchEngine,
     setSelectedSearchEngine,
-    initializeSearchEngine
+    initializeSearchEngine,
   ] = useSearchEngineStore((s) => [
     s.searchEngineList,
     s.error,
     s.selectedSearchEngine,
     s.setSelectedSearchEngine,
-    s.initializeSearchEngine
+    s.initializeSearchEngine,
   ]);
 
   const [api, contextHolder] = notification.useNotification();
@@ -71,7 +69,7 @@ export default function SearchEngines() {
         ),
         disabled: false,
         onClick: () => setSelectedSearchEngine(engines.key),
-      })
+      }),
     );
     searchEnginesList = [...searchEnginesList, ...searchEngines];
 

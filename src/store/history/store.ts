@@ -5,8 +5,7 @@ import { createWithEqualityFn } from "zustand/traditional";
 import { HistoryActions, HistoryActionsType } from "./action";
 import { HistoryStoreType, initialHistoryState } from "./initialState";
 
-export type HistoryStore = HistoryStoreType &
-  HistoryActionsType;
+export type HistoryStore = HistoryStoreType & HistoryActionsType;
 
 const createStore: StateCreator<HistoryStore, []> = (...params) => ({
   ...initialHistoryState,
@@ -17,6 +16,6 @@ export const useHistoryStore = createWithEqualityFn<HistoryStore>()(
   subscribeWithSelector(
     devtools(createStore, {
       name: "Ollama search",
-    })
+    }),
   ),
 );

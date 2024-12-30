@@ -1,5 +1,3 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix , typescript-sort-keys/interface */
-
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace NodeJS {
@@ -20,7 +18,7 @@ declare global {
 export const getServerConfig = () => {
   if (typeof process === "undefined") {
     throw new Error(
-      "[Server Config] you are importing a server-only module outside of server"
+      "[Server Config] you are importing a server-only module outside of server",
     );
   }
 
