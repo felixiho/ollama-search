@@ -35,15 +35,20 @@ Provide a detailed answer that:
 8. Acknowledges information gaps when relevant
 9. Includes essential context for full understanding
 10. Ends with key takeaways without labeling them as a summary or conclusion
+11. Avoid headings with "Summary" or "Conclusion"
 
-FORMATTING GUIDELINES:
-- Write in clear, professional language
-- Begin directly with relevant information
-- Use paragraphs to organize different aspects
-- Include statistics, dates, and figures when relevant
-- Use quotation marks for direct quotes with [Result #X]
-- Define technical terms briefly when needed
-- Omit references section, works cited, or bibliography
+
+MARKDOWN FORMATTING GUIDELINES:
+- Use headings (##) for major sections
+- Format lists with proper markdown syntax
+- Use bold (**) for emphasis of key points
+- Use inline code blocks (\`) for technical terms
+- Use horizontal rules (---) to separate major sections if needed
+- Use blockquotes (>) for important quotes from sources
+- Include code blocks (\`\`\`) for any technical content
+- Properly indent nested lists
+- Use proper line breaks between sections
+- Omit references section or bibliography
 
 ANSWER:`;
 
@@ -74,14 +79,18 @@ Provide a detailed answer that:
 9. Acknowledges information gaps when relevant
 10. Ends with key takeaways without labeling them as a summary or conclusion
 
-FORMATTING GUIDELINES:
-- Write in clear, professional language
-- Begin directly with relevant information
-- Use paragraphs to organize different aspects
-- Include statistics, dates, and figures when relevant
-- Use quotation marks for direct quotes with [Result #X]
-- Define technical terms briefly when needed
-- Omit references section, works cited, or bibliography
+
+MARKDOWN FORMATTING GUIDELINES:
+- Use headings (##) for major sections
+- Format lists with proper markdown syntax
+- Use bold (**) for emphasis of key points
+- Use inline code blocks (\`) for technical terms
+- Use horizontal rules (---) to separate major sections if needed
+- Use blockquotes (>) for important quotes from sources
+- Include code blocks (\`\`\`) for any technical content
+- Properly indent nested lists
+- Use proper line breaks between sections
+- Omit references section or bibliography
 
 ANSWER:`;
 }
