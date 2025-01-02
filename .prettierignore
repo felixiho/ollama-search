@@ -6,6 +6,7 @@
 .history
 .temp
 .env.local
+.env.example
 .husky
 .npmrc
 .gitkeep 
