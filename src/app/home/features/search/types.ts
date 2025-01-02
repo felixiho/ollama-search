@@ -3,6 +3,7 @@ import { SearchEngineTypes } from "../../components/search-box/search-engine/typ
 export interface SearchResultType {
   id: string;
   query: string;
+  formattedQuery: string;
   searchEngine: SearchEngineTypes;
   model: string;
   answer: string;

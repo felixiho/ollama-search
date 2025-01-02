@@ -22,7 +22,10 @@ export interface SearchActionsType {
     searchEngine: SearchEngineTypes,
   ) => void;
   resetSearch: () => void;
-  searchWeb: (searchService: SearchService) => Promise<WebSearchType>;
+  searchWeb: (
+    searchService: SearchService,
+    model: string,
+  ) => Promise<WebSearchType & { formattedQuery: string }>;
   createSearchResult: (searchResult: SearchResultType) => void;
   searchLLM: (
     answer: SearchResultType,
@@ -75,6 +78,7 @@ export const SearchActions: StateCreator<
     const searchResult: SearchResultType = {
       id: resultId,
       query: searchInput,
+      formattedQuery: "",
       model,
       searchEngine,
       searchEngineAnswer: "",
@@ -85,7 +89,7 @@ export const SearchActions: StateCreator<
     createSearchResult(searchResult);
 
     const searchService = new SearchService(model, searchEngine);
-    const webResponse = await searchWeb(searchService);
+    const webResponse = await searchWeb(searchService, model);
     updateResult({
       id: resultId,
       key: "searchEngineAnswer",
@@ -97,6 +101,12 @@ export const SearchActions: StateCreator<
       key: "sources",
       type: "updateSearchResult",
       value: webResponse.sources,
+    });
+    updateResult({
+      id: resultId,
+      key: "formattedQuery",
+      type: "updateSearchResult",
+      value: webResponse.formattedQuery,
     });
     searchResult.searchEngineAnswer = webResponse.searchResults;
     searchResult.sources = webResponse.sources;
@@ -113,12 +123,15 @@ export const SearchActions: StateCreator<
     set({ loadingWeb: false }, false);
     const ollama = new Ollama(answer.model);
     const ollamaUrl = previousAnswer
-      ? ollama.generateFollowupQueryUrl(
-          answer.query,
+      ? await ollama.generateFollowupQueryUrl(
+          answer.formattedQuery,
           answer.searchEngineAnswer,
           previousAnswer,
         )
-      : ollama.generateQueryUrl(answer.query, answer.searchEngineAnswer);
+      : await ollama.generateQueryUrl(
+          answer.formattedQuery,
+          answer.searchEngineAnswer,
+        );
     const response = await fetch(ollamaUrl);
     const reader = response.body?.getReader();
     if (!reader) {
@@ -197,12 +210,18 @@ export const SearchActions: StateCreator<
   resetSearch() {
     set({ ...intialSearchState });
   },
-  async searchWeb(searchService) {
-    const { searchInput, controller } = get();
-    const webResponse = await searchService.webSearch(
+  async searchWeb(searchService, model) {
+    const { searchInput, controller, answer } = get();
+    const ollama = new Ollama(model);
+    const prevQuery = answer[answer.length - 1]?.formattedQuery || "";
+    const searchQuery = await ollama.generateSearchQuery(
       searchInput,
+      prevQuery,
+    );
+    const webResponse = await searchService.webSearch(
+      searchQuery,
       controller?.signal,
     );
-    return webResponse;
+    return { ...webResponse, formattedQuery: searchQuery };
   },
 });

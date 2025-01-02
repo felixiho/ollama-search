@@ -13,22 +13,21 @@ export class SearchService {
   }
 
   private async tavilySearch(searchInput: string, controller?: AbortSignal) {
-    const searchUrl = `api/tavily?searchInput=${searchInput}`;
+    const searchUrl = `/api/tavily?searchInput=${searchInput}`;
     const searchResults = await apiFetch(
       searchUrl,
-      { query: searchInput },
+      { query: searchInput, include_raw_content: true, max_results: 3 },
       controller,
     );
-    const formatSearchResults = this.formatTavilyResults(searchResults, 10);
+    const formatSearchResults = this.formatTavilyResults(searchResults, 100);
     const sources = this.generateTavilySources(searchResults);
-
     return {
       searchResults: formatSearchResults,
       sources,
     };
   }
   private googleSearch(searchInput: string) {
-    const searchUrl = `api/google?searchInput=${searchInput}`;
+    const searchUrl = `/api/google?searchInput=${searchInput}`;
     console.log(searchUrl);
     return {
       searchResults: "",

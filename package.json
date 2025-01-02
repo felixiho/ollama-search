@@ -11,6 +11,8 @@
     "prettier": "prettier -c --write \"**/**\""
   },
   "dependencies": {
+    "@langchain/core": "^0.3.26",
+    "@langchain/ollama": "^0.1.4",
     "antd": "^5.22.4",
     "antd-style": "^3.7.1",
     "immer": "^10.1.1",
