@@ -2,6 +2,9 @@
 
 Open-source AI-powered search engine based off [Ollama](https://ollama.ai/) models.
 
+https://github.com/user-attachments/assets/be103232-7f97-440e-b618-f9ed451da20e
+
+
 ## Features
 
 - 🔍 Generate search queries with langchain
