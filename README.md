@@ -17,6 +17,7 @@ https://github.com/user-attachments/assets/be103232-7f97-440e-b618-f9ed451da20e
 ### Prerequisites
 
 - Ollama installed and running locally
+  - Ollama: Pull a model from the library. Example: `ollama pull gemma`
 - Node.js (version 18 or higher)
 - [Tavily](https://tavily.com/) API key
 
