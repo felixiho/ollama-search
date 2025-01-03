@@ -14,6 +14,7 @@ Open-source AI-powered search engine based off [Ollama](https://ollama.ai/) mode
 ### Prerequisites
 
 - Ollama installed and running locally
+  - Ollama: Pull a model from the library. Example: `ollama pull gemma`
 - Node.js (version 18 or higher)
 - [Tavily](https://tavily.com/) API key
 
