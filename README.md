@@ -1,3 +1,5 @@
+
+
 # Ollama Search
 
 Open-source AI-powered search engine based off [Ollama](https://ollama.ai/) models.
@@ -32,7 +34,7 @@ cp .env.example .env.local
 
 ### Usage
 
-Update your .env with the tavily api key
+Update your .env.local with the tavily api key
 
 Start application:
 
